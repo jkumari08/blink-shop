@@ -1,73 +1,176 @@
-# Welcome to your Lovable project
+# BlinkShop
 
-## Project info
+**Instant social commerce on Solana.** Merchants create products. Buyers purchase directly from social media posts without leaving their feed. Payments settle in 400ms.
 
-**URL**: https://lovable.dev/projects/1884addd-21e7-429a-b276-0f790f8436d0
 
-## How can I edit this code?
+---
 
-There are several ways of editing your application.
+## Table of Contents
+1. [Project Description](#project-description)
+2. [Team](#team)
+3. [Setup & Installation](#setup--installation)
+4. [Architecture](#architecture)
+5. [Tech Stack](#tech-stack)
+6. [Features](#features)
 
-**Use Lovable**
+---
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/1884addd-21e7-429a-b276-0f790f8436d0) and start prompting.
+## Project Description
 
-Changes made via Lovable will be committed automatically to this repo.
+BlinkShop is a two-sided social commerce platform:
 
-**Use your preferred IDE**
+**Merchants** create shareable product cards (Blinks) in seconds - no website needed.
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+**Buyers** click a Blink on X, Discord, or Reddit → select a token → approve → done in 400ms. No leaving the platform.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+**Why it matters:**
+- Traditional e-commerce: See post → Click link → Navigate website → Checkout → Wait days → Merchant loses 2-3% + $0.30
+- BlinkShop: Click → Approve → Done in 400ms on Solana at $0.001/tx
 
-Follow these steps:
+---
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## Team
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+**Team Name:** BlinkShop  
+**Track:** Solana Main Track
+**Bounty:** Circle  
+**Team Members:** Jagrati Kumari (Full-Stack Blockchain Engineer - Solo)
 
-# Step 3: Install the necessary dependencies.
-npm i
+---
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+## Setup & Installation
+
+### Prerequisites
+- Node.js 18+
+- Git
+- A Solana wallet (Phantom, Solflare, Torus, or Ledger)
+
+### Install & Run
+
+```bash
+git clone https://github.com/jkumari08/blink-checkout.git
+cd blink-checkout
+npm install
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+Open `http://localhost:8081` and connect your wallet.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Get Devnet Tokens
+- **SOL:** https://faucet.solana.com/
+- **USDC/USDT:** https://spl-token-faucet.vercel.app/
 
-**Use GitHub Codespaces**
+### Test Flow
+1. **Create Product:** Go to "Create Blink" → Fill form (name, description, price 5 USDC, image) → Generate link
+2. **Purchase:** Switch to another wallet → Click the product link → Select token → Approve in wallet
+3. **Verify:** Click Explorer link to see transaction on https://explorer.solana.com/?cluster=devnet
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+---
 
-## What technologies are used for this project?
+## Architecture
 
-This project is built with:
+### System Design
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+```
+Frontend (React)
+    ↓
+Web3 Layer (Web3.js + useMultiTokenTransaction)
+    ↓
+Solana Blockchain (Devnet)
+    ├─ Token Transfers (SOL/USDC/USDT)
+    ├─ Anchor Program (BlinkPaymentTracker)
+    └─ RPC: https://api.devnet.solana.com
+    ↓
+External Services
+    ├─ Circle APIs (Wallets, Payments, Settlement, Bridge)
+    └─ Solana Explorer
+```
 
-## How can I deploy this project?
+### Data Flow
+```
+1. Merchant fills form → generates Blink URL
+2. Buyer clicks Blink on social media
+3. App loads product (BlinkPreview component)
+4. Buyer selects token (SOL/USDC/USDT)
+5. Clicks "Buy Now"
+6. useMultiTokenTransaction hook creates transaction
+7. Wallet signs
+8. Transaction broadcast to devnet
+9. Anchor program records payment on-chain
+10. Circle settles funds
+11. Success message with Explorer link
 
-Simply open [Lovable](https://lovable.dev/projects/1884addd-21e7-429a-b276-0f790f8436d0) and click on Share -> Publish.
+⏱️ Total: ~400ms
+```
 
-## Can I connect a custom domain to my Lovable project?
+### File Structure
 
-Yes, you can!
+```
+src/
+├── components/
+│   ├── BlinkPreview.tsx       # Product display + payment UI
+│   ├── CreateBlink.tsx        # Product creation form
+│   ├── Navbar.tsx             # Wallet connection
+│   └── ui/                    # 30+ shadcn components
+├── hooks/
+│   └── useMultiTokenTransaction.ts  # Payment processor
+├── lib/
+│   ├── anchor-program.ts      # On-chain recording
+│   ├── circle-advanced.ts     # Circle APIs
+│   └── utils.ts
+├── pages/
+│   ├── Index.tsx              # Home
+│   └── CreateBlink.tsx        # Product creation
+└── App.tsx
+```
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+---
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+## Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| **Frontend** | React 18, TypeScript, Vite |
+| **Blockchain** | Solana Web3.js, Anchor Framework |
+| **Wallets** | Phantom, Solflare, Torus, Ledger |
+| **Tokens** | SOL (native), USDC, USDT (SPL) |
+| **Payments** | Circle APIs (all 4) |
+| **UI** | Tailwind CSS, shadcn/ui |
+| **Network** | Solana Devnet |
+
+---
+
+## Features
+
+✅ Multi-token payments (SOL, USDC, USDT)  
+✅ 4 wallet support  
+✅ Real devnet transactions  
+✅ On-chain payment recording (Anchor)  
+✅ Circle Payments integration  
+✅ Mobile responsive  
+✅ Zero TypeScript errors  
+✅ 400ms settlement  
+
+---
+
+## Token Mints (Devnet)
+
+```
+SOL:  Native
+USDC: EPjFWaLb3odccccccccccccccccccccccccPEKjAxm
+USDT: Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenEqw
+```
+
+---
+
+## GitHub
+
+https://github.com/jkumari08/blink-checkout
+
+## Demo Video
+
+https://youtu.be/2_zsfPyihlk
+
+## Twitter
+
+https://x.com/blinkshop2025
