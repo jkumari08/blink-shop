@@ -249,10 +249,10 @@ https://github.com/jkumari08/blink-shop
 
 https://youtu.be/x00CvmI3nUw
 
-## Twitter
+## X URL
 
 https://x.com/blinkshop2025
 
-## Presentation Slide URL:
+## Pitch Deck
 https://docs.google.com/presentation/d/1iAU-e5TLH_vXD3cdvRx53mIWZP5rfrZ570EpBEEDing/edit?usp=sharing
 
